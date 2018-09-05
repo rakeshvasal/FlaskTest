@@ -18,21 +18,57 @@ def testing():
     return '<h1>This is another testing page</h1>'
 
 # Dashboard
-@app.route('/dashboard')
+@app.route('/about')
 ##@is_logged_in	
 def dashboard():
-	result = firebase.get('/users', None)
-	# for x in result:
-	# print(x)
 	userList = []
-	userdata=''
+	result = firebase.get('/users', None)
 	for x, y in result.items():
-		d_list = json.loads(y)
-  	  	userList.append(userdata)
+		userdata = json.dumps(y)
+		lastindex = userdata.rindex('}')
+		userdata = userdata[:lastindex]
+		userdata = userdata + " ,\"id\" : \"" + x + "\"}"
+		print(userdata)
+		d_list = json.loads(userdata)
+		userList.append(d_list)
 
-		
 	return render_template('displayallusers.html',users=userList)
 
 
+@app.route('/add_user', methods=['GET','POST'])
+def add_user():
+	form = Add_user_form(request.form)
+	if request.method == 'POST' and form.validate():
+		user = {}
+		name = form.name.data
+		username = form.username.data
+		email = form.email.data
+		password = form.password.data
+		user['name'] = name
+		user['username'] = username
+		user['email'] = email
+		user['password'] = password
+		json_data = json.dumps(user)
+		result = firebase.post("/users", json_data)
+		print(result)
+
+	return render_template('registration.html', form = form)
+
+
+@app.route('/delete_user/<string:id>', methods=['POST'])
+def delete_user(id):
+	flash('Article Deleted', 'success')
+	return redirect(url_for('dashboard')) 
+
+class Add_user_form(Form):
+	name = StringField('Name',[validators.Length(min = 1, max=50)])
+	username = StringField('UserName',[validators.Length(min = 1, max=50)])
+	email = StringField('Email Address',[validators.Length(min = 1, max=50)])
+	password = PasswordField('Password', [
+        validators.DataRequired(),
+        validators.EqualTo('confirm', message='Passwords must match')])
+	confirm = PasswordField('Confirm Password')	
+
 if __name__ == '__main__':
-    app.run(debug=True)
+	app.secret_key = 'secret123'
+	app.run(debug=True)
