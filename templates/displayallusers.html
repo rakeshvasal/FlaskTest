@@ -2,22 +2,21 @@
 
 {% block body %}
 	<H1>Dashboard</H1><h4>Welcome {{session.username}}</h4>
-	<a class="btn btn-success" href="/add_user"> Add Article</a>
+	<a class="btn btn-success" href="/add_user_page">Add Article</a>
 	<hr>
 	<table class="table table-stripped">
 		<tr>
 			<th>ID</th>
-			<th>Title</th>
-			<th>author</th>
-			<th>Date</th>
+			<th>Name</th>
+			<th>Username</th>
 			<th></th>
 			<th></th>
 		</tr>
 		{% for user in users %}
 		<tr>
 			<td>{{user.id}}</td>
-			<td>{{user.Name}}</td>
-			<td>{{user.Percentage}}</td>
+			<td>{{user.name}}</td>
+			<td>{{user.username}}</td>
 			<td>{{user.RollNo}}</td>
 			<td><a href="edit_user/{{user.id}}" class ="btn btn-default pull-right">Edit</td>
 			<td>

@@ -14,10 +14,18 @@ def index():
     return render_template('home.html')
 
 
-@app.route('/testing')
-def testing():
-    return '<h1>This is another testing page</h1>'
+@app.route('/login')
+def login_controller():
+	if request.method == 'POST':
+		str_username = request.form['username']
+		str_password = request.form['password']
+		
+	return render_template('login.html', error = error)	
+    
 
+@app.route('/login_page')
+def login_page():
+    return render_template('login.html')
 
 # Dashboard
 @app.route('/about')
@@ -36,24 +44,30 @@ def dashboard():
     return render_template('displayallusers.html', users=userlist)
 
 
-@app.route('/add_user', methods=['GET', 'POST'])
+@app.route('/add_user', methods=['GET','POST'])
 def add_user():
-    form = Add_user_form(request.form)
-    if request.method == 'POST' and form.validate():
-        user = {}
-        name = form.name.data
-        username = form.username.data
-        email = form.email.data
-        password = form.password.data
-        user['name'] = name
-        user['username'] = username
-        user['email'] = email
-        user['password'] = password
-        json_data = json.dumps(user)
-        json_str = json.loads(json_data)
-        result = firebase.post("/users", json_str)
+	form = Add_user_form(request.form)
+	if request.method == 'POST' and form.validate():
+		user = {}
+		name = form.name.data
+		username = form.username.data
+		email = form.email.data
+		password = form.password.data
+		user['name'] = name
+		user['username'] = username
+		user['email'] = email
+		user['password'] = password
+		json_data = json.dumps(user)
+		json_str = json.loads(json_data)
+		result = firebase.post("/users", json_str)
+		print(result)
 
-    return render_template('registration.html', form=form)
+	return redirect(url_for('dashboard'))
+
+@app.route('/add_user_page')
+def add_user_page():
+	form = Add_user_form(request.form)
+	return render_template('registration.html', form = form)
 
 
 @app.route('/delete_user/<string:id>', methods=['POST'])
