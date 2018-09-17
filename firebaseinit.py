@@ -6,7 +6,8 @@ import json
 from functools import wraps
 
 app = Flask(__name__)
-firebase = firebase.FirebaseApplication('https://androidone-43cbb.firebaseio.com/', None)
+##firebase = firebase.FirebaseApplication('https://androidone-43cbb.firebaseio.com/', None)
+firebase = firebase.FirebaseApplication('https://myapplication-8f68b.firebaseio.com/', None)
 
 
 @app.route('/')
@@ -39,51 +40,73 @@ def dashboard():
         userdata = userdata + " ,\"id\" : \"" + x + "\"}"
         print(userdata)
         d_list = json.loads(userdata)
-        userlist.append(d_list)
+        ##userlist.append(d_list)
 
     return render_template('displayallusers.html', users=userlist)
 
 
+## Add User Api Call 
 @app.route('/add_user', methods=['GET','POST'])
 def add_user():
 	form = Add_user_form(request.form)
 	if request.method == 'POST' and form.validate():
+		
 		user = {}
 		name = form.name.data
-		username = form.username.data
-		email = form.email.data
-		password = form.password.data
+		contact_no = form.contact_no.data
+		user_name = form.user_name.data
+		course_year = form.course_year.data
+		photourl = form.photourl.data
+		role = form.role.data
+		branch = form.branch.data
+		email = form.email_address.data
+		user_password = form.user_password.data
 		user['name'] = name
-		user['username'] = username
-		user['email'] = email
-		user['password'] = password
+		user['user_email'] = email
+		user['user_name'] = user_name
+		user['user_id'] = 1
+		user['contact_no'] = contact_no
+		user['password'] = user_password
+		user['course_year'] = ""
+		user['photourl'] = ""
+		user['role'] = ""
+		user['branch'] = ""
+		user['google_id'] = ""
 		json_data = json.dumps(user)
 		json_str = json.loads(json_data)
+		##u_id = firebase.push() 
 		result = firebase.post("/users", json_str)
 		print(result)
 
 	return redirect(url_for('dashboard'))
 
+## redirects the user to the html page for adding a user
 @app.route('/add_user_page')
 def add_user_page():
 	form = Add_user_form(request.form)
 	return render_template('registration.html', form = form)
 
-
+## Add Delete Api Call 
 @app.route('/delete_user/<string:id>', methods=['POST'])
 def delete_user(id):
     flash('Article Deleted', 'success')
     return redirect(url_for('dashboard'))
 
-
+## Form for Creating a user using wtforms
 class Add_user_form(Form):
     name = StringField('Name', [validators.Length(min=1, max=50)])
-    username = StringField('UserName', [validators.Length(min=1, max=50)])
-    email = StringField('Email Address', [validators.Length(min=1, max=50)])
-    password = PasswordField('Password', [
+    email_address = StringField('Email Address', [validators.Length(min=1, max=50)])
+    user_name = StringField('UserName', [validators.Length(min=1, max=50)])
+    contact_no = StringField('Contact Number', [validators.Length(min=1, max=50)])
+    course_year = StringField('Course Year', [validators.Length(min=1, max=50)])
+    photourl = StringField('Photo URL', [validators.Length(min=1, max=50)])
+    role = StringField('Role', [validators.Length(min=1, max=50)])
+    branch = StringField('Branch', [validators.Length(min=1, max=50)])
+    user_password = PasswordField('Password', [
         validators.DataRequired(),
         validators.EqualTo('confirm', message='Passwords must match')])
     confirm = PasswordField('Confirm Password')
+
 
 
 if __name__ == '__main__':
