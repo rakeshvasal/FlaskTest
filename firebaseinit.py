@@ -29,7 +29,7 @@ def login_page():
     return render_template('login.html')
 
 # Dashboard
-@app.route('/about')
+@app.route('/dashboard')
 def dashboard():
     userlist = []
     result = firebase.get('/users', None)
@@ -76,6 +76,7 @@ def add_user():
 		json_str = json.loads(json_data)
 		##u_id = firebase.push() 
 		result = firebase.post("/users", json_str)
+		
 		print(result)
 
 	return redirect(url_for('dashboard'))

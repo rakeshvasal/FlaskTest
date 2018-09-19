@@ -7,7 +7,7 @@ app = Flask(__name__)
 ##client = MongoClient()
 ##db = client.sampleDB
 
-client = pymongo.MongoClient("mongodb+srv://rakeshvasal:pass%4067675%0A@rakesh1-9x2sl.gcp.mongodb.net/test?retryWrites=true")
+client = pymongo.MongoClient("mongodb+srv://rakeshvasal:20041992@rakesh1-9x2sl.gcp.mongodb.net/test?retryWrites=true")
 db = client.test
 try:
     info = client.server_info() # Forces a call.
